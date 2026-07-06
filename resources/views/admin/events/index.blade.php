@@ -14,15 +14,27 @@
             </a>
         </div>
 
+        @if(session('success'))
+            <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-2xl font-medium">
+                {{ session('success') }}
+            </div>
+        @endif
+
         <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
-            <div class="px-8 py-6 bg-slate-50/50 border-b flex gap-4">
-                <input type="text" placeholder="Cari nama event..."
-                    class="flex-1 px-5 py-3 rounded-xl border-slate-200 border bg-white focus:ring-2 focus:ring-indigo-500 outline-none transition">
-                <select class="px-5 py-3 rounded-xl border-slate-200 border bg-white outline-none">
-                    <option>Semua Kategori</option>
-                    <option>Musik</option>
-                    <option>Workshop</option>
-                </select>
+            <div class="px-8 py-6 bg-slate-50/50 border-b">
+                <form action="{{ route('admin.events.index') }}" method="GET" class="flex gap-4">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama event..."
+                        class="flex-1 px-5 py-3 rounded-xl border-slate-200 border bg-white focus:ring-2 focus:ring-indigo-500 outline-none transition">
+                    <select name="category_id" onchange="this.form.submit()" class="px-5 py-3 rounded-xl border-slate-200 border bg-white outline-none">
+                        <option value="">Semua Kategori</option>
+                        @foreach($categories as $category)
+                            <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                                {{ $category->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <button type="submit" class="px-6 py-3 bg-slate-800 text-white rounded-xl font-bold hover:bg-slate-900 transition">Cari</button>
+                </form>
             </div>
 
             <div class="overflow-x-auto">
@@ -37,76 +49,65 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y border-t">
-                        <tr class="hover:bg-slate-50/50 transition">
-                            <td class="px-8 py-6 font-bold text-slate-400">1</td>
-                            <td class="px-8 py-6">
-                                <img src="{{ asset('assets/concert.png') }}" class="w-16 h-20 rounded-xl object-cover shadow-sm">
-                            </td>
-                            <td class="px-8 py-6">
-                                <p class="font-black text-slate-800">Jazz Night 2024</p>
-                                <p class="text-xs text-slate-400">Musik • 16 Nov 2024</p>
-                            </td>
-                            <td class="px-8 py-6">
-                                <p class="font-bold text-indigo-600">Rp 150.000</p>
-                                <p class="text-xs text-slate-400">Stok: 42/100</p>
-                            </td>
-                            <td class="px-8 py-6">
-                                <div class="flex gap-2">
-                                    <a href="{{ route('admin.events.edit', 1) }}"
-                                        class="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl hover:bg-indigo-600 hover:text-white transition">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 00-2 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                                            </path>
-                                        </svg>
-                                    </a>
-                                    <button
-                                        class="p-2.5 bg-rose-50 text-rose-600 rounded-xl hover:bg-rose-600 hover:text-white transition">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                                            </path>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-slate-50/50 transition">
-                            <td class="px-8 py-6 font-bold text-slate-400">2</td>
-                            <td class="px-8 py-6">
-                                <img src="{{ asset('assets/workshop.png') }}" class="w-16 h-20 rounded-xl object-cover shadow-sm">
-                            </td>
-                            <td class="px-8 py-6">
-                                <p class="font-black text-slate-800">AI & Future Workshop</p>
-                                <p class="text-xs text-slate-400">Tech • 26 Oct 2024</p>
-                            </td>
-                            <td class="px-8 py-6">
-                                <p class="font-bold text-indigo-600">Rp 50.000</p>
-                                <p class="text-xs text-slate-400">Stok: 12/50</p>
-                            </td>
-                            <td class="px-8 py-6">
-                                <div class="flex gap-2">
-                                    <a href="{{ route('admin.events.edit', 2) }}"
-                                        class="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl hover:bg-indigo-600 hover:text-white transition">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 00-2 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                                            </path>
-                                        </svg>
-                                    </a>
-                                    <button
-                                        class="p-2.5 bg-rose-50 text-rose-600 rounded-xl hover:bg-rose-600 hover:text-white transition">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                                            </path>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
+                        @forelse($events as $index => $event)
+                            <tr class="hover:bg-slate-50/50 transition">
+                                <td class="px-8 py-6 font-bold text-slate-400">
+                                    {{ $events->firstItem() + $index }}
+                                </td>
+                                <td class="px-8 py-6">
+                                    @if($event->poster_path)
+                                        <img src="{{ Storage::url($event->poster_path) }}" class="w-16 h-20 rounded-xl object-cover shadow-sm">
+                                    @else
+                                        <img src="{{ asset('assets/concert.png') }}" class="w-16 h-20 rounded-xl object-cover shadow-sm">
+                                    @endif
+                                </td>
+                                <td class="px-8 py-6">
+                                    <p class="font-black text-slate-800">{{ $event->title }}</p>
+                                    <p class="text-xs text-slate-400">{{ $event->category->name }} • {{ \Carbon\Carbon::parse($event->date)->format('d M Y') }}</p>
+                                    <p class="text-xs text-slate-500 mt-1 italic">{{ $event->location }}</p>
+                                </td>
+                                <td class="px-8 py-6">
+                                    <p class="font-bold text-indigo-600">Rp {{ number_format($event->price, 0, ',', '.') }}</p>
+                                    <p class="text-xs text-slate-400">Stok: {{ $event->stock }}</p>
+                                </td>
+                                <td class="px-8 py-6">
+                                    <div class="flex gap-2">
+                                        <a href="{{ route('admin.events.edit', $event->id) }}"
+                                            class="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl hover:bg-indigo-600 hover:text-white transition">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 00-2 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                                </path>
+                                            </svg>
+                                        </a>
+                                        <form action="{{ route('admin.events.destroy', $event->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus event ini?')" class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                class="p-2.5 bg-rose-50 text-rose-600 rounded-xl hover:bg-rose-600 hover:text-white transition">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                                    </path>
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="px-8 py-6 text-center text-slate-500">Tidak ada event ditemukan.</td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
+
+            @if($events->hasPages())
+                <div class="px-8 py-4 border-t">
+                    {{ $events->links() }}
+                </div>
+            @endif
         </div>
 @endsection

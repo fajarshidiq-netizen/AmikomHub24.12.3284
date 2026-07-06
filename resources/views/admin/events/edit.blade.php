@@ -14,21 +14,37 @@
             <p class="text-slate-500 font-medium">Ubah detail dan stok untuk acara Anda.</p>
         </div>
 
+        @if($errors->any())
+            <div class="mb-6 p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl">
+                <ul class="list-disc list-inside text-sm">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm p-8 max-w-3xl">
-            <form class="space-y-6">
+            <form action="{{ route('admin.events.update', $event->id) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+                @csrf
+                @method('PUT')
+                
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Nama Event</label>
-                        <input type="text" value="Jazz Night 2024" placeholder="Masukkan nama event"
+                        <input type="text" name="title" value="{{ old('title', $event->title) }}" placeholder="Masukkan nama event"
                             class="w-full px-5 py-4 bg-white border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none transition font-medium"
                             required>
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Kategori</label>
-                        <select class="w-full px-5 py-4 bg-white border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none transition font-medium">
-                            <option selected>Musik</option>
-                            <option>Workshop</option>
-                            <option>Coding</option>
+                        <select name="category_id" class="w-full px-5 py-4 bg-white border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none transition font-medium" required>
+                            <option value="">Pilih Kategori</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}" {{ old('category_id', $event->category_id) == $category->id ? 'selected' : '' }}>
+                                    {{ $category->name }}
+                                </option>
+                            @endforeach
                         </select>
                     </div>
                 </div>
@@ -36,23 +52,52 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Harga Tiket (Rp)</label>
-                        <input type="number" value="150000" placeholder="Contoh: 150000"
+                        <input type="number" name="price" value="{{ old('price', $event->price) }}" placeholder="Contoh: 150000"
                             class="w-full px-5 py-4 bg-white border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none transition font-medium"
                             required>
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Stok Tiket</label>
-                        <input type="number" value="100" placeholder="Contoh: 100"
+                        <input type="number" name="stock" value="{{ old('stock', $event->stock) }}" placeholder="Contoh: 100"
+                            class="w-full px-5 py-4 bg-white border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none transition font-medium"
+                            required>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Tanggal & Waktu</label>
+                        <input type="datetime-local" name="date" value="{{ old('date', \Carbon\Carbon::parse($event->date)->format('Y-m-d\TH:i')) }}"
+                            class="w-full px-5 py-4 bg-white border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none transition font-medium"
+                            required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Lokasi</label>
+                        <input type="text" name="location" value="{{ old('location', $event->location) }}" placeholder="Contoh: Gedung 5 Amikom"
                             class="w-full px-5 py-4 bg-white border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none transition font-medium"
                             required>
                     </div>
                 </div>
 
                 <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Poster Event</label>
+                    <div class="flex gap-4 items-center mb-2">
+                        @if($event->poster_path)
+                            <img src="{{ Storage::url($event->poster_path) }}" class="w-16 h-20 rounded-xl object-cover shadow-sm">
+                        @else
+                            <img src="{{ asset('assets/concert.png') }}" class="w-16 h-20 rounded-xl object-cover shadow-sm">
+                        @endif
+                        <input type="file" name="poster"
+                            class="flex-1 px-5 py-4 bg-white border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none transition font-medium">
+                    </div>
+                    <p class="text-xs text-slate-400">Format gambar: JPG, PNG, JPEG. Maks 2MB. Biarkan kosong jika tidak ingin mengubah poster.</p>
+                </div>
+
+                <div>
                     <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Deskripsi Event</label>
-                    <textarea placeholder="Jelaskan detail event Anda..." rows="5"
+                    <textarea name="description" placeholder="Jelaskan detail event Anda..." rows="5"
                         class="w-full px-5 py-4 bg-white border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none transition font-medium"
-                        required>Nikmati malam yang tak terlupakan dengan alunan jazz dari musisi internasional. Jazz Night 2024 hadir untuk membawa Anda ke dalam perjalanan melodi yang menenangkan dan ritme yang menggugah jiwa.</textarea>
+                        required>{{ old('description', $event->description) }}</textarea>
                 </div>
 
                 <div class="flex gap-4">
