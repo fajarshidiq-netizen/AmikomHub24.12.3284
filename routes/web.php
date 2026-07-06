@@ -9,18 +9,27 @@ use App\Http\Controllers\Admin\EventController as AdminEventController;
 use App\Http\Controllers\Admin\TransactionController as AdminTransactionController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 
+use App\Http\Controllers\Admin\AuthController as AdminAuthController;
+
 // User Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/events/{id}', [EventController::class, 'show'])->name('events.show');
 Route::get('/events/{id}/checkout', [EventController::class, 'checkout'])->name('events.checkout');
 Route::get('/tickets/{id}', [TicketController::class, 'show'])->name('tickets.show');
 
-// Admin Routes
-Route::prefix('admin')->name('admin.')->group(function () {
+// Admin Guest Routes
+Route::middleware('guest')->group(function () {
+    Route::get('/admin/login', [AdminAuthController::class, 'showLogin'])->name('login');
+    Route::post('/admin/login', [AdminAuthController::class, 'login'])->name('admin.login.submit');
+});
+
+// Admin Protected Routes
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
     Route::resource('events', AdminEventController::class)->except(['show']);
     Route::get('/transactions', [AdminTransactionController::class, 'index'])->name('transactions.index');
     Route::get('/categories', [AdminCategoryController::class, 'index'])->name('categories.index');
     Route::get('/categories/create', [AdminCategoryController::class, 'create'])->name('categories.create');
     Route::get('/categories/{id}/edit', [AdminCategoryController::class, 'edit'])->name('categories.edit');
+    Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 });
