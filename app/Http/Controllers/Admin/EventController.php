@@ -47,28 +47,27 @@ class EventController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
+        // Menerapkan validasi data request dari pengguna
+        $data = $request->validate([
             'category_id' => 'required|exists:categories,id',
+            'title'       => 'required|string|max:255',
             'description' => 'nullable|string',
-            'date' => 'required|date',
-            'location' => 'required|string|max:255',
-            'price' => 'required|integer|min:0',
-            'stock' => 'required|integer|min:0',
-            'poster' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'date'        => 'required|date',
+            'location'    => 'required|string|max:255',
+            'price'       => 'required|numeric|min:0',
+            'stock'       => 'required|numeric|min:1',
+            'poster'      => 'nullable|image|max:2048', // Maksimal 2MB
         ]);
 
-        $data = $request->except('poster');
-
         if ($request->hasFile('poster')) {
-            // Save poster to public/posters storage disk
-            $path = $request->file('poster')->store('posters', 'public');
-            $data['poster_path'] = $path;
+            // Simpan ke direktori storage/app/public/posters
+            $data['poster_path'] = $request->file('poster')->store('posters', 'public');
         }
 
-        Event::create($data);
+        // Menyimpan data yang telah divalidasi ke dalam tabel menggunakan Model
+        \App\Models\Event::create($data);
 
-        return redirect()->route('admin.events.index')->with('success', 'Event berhasil ditambahkan.');
+        return redirect()->route('admin.events.index')->with('success', 'Data Event berhasil ditambahkan.');
     }
 
     /**
@@ -84,31 +83,26 @@ class EventController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Event $event)
     {
-        $event = Event::findOrFail($id);
-
-        $request->validate([
-            'title' => 'required|string|max:255',
+        $data = $request->validate([
             'category_id' => 'required|exists:categories,id',
+            'title'       => 'required|string|max:255',
             'description' => 'nullable|string',
-            'date' => 'required|date',
-            'location' => 'required|string|max:255',
-            'price' => 'required|integer|min:0',
-            'stock' => 'required|integer|min:0',
-            'poster' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'date'        => 'required|date',
+            'location'    => 'required|string|max:255',
+            'price'       => 'required|numeric|min:0',
+            'stock'       => 'required|numeric|min:1',
+            'poster'      => 'nullable|image|max:2048',
         ]);
 
-        $data = $request->except('poster');
-
         if ($request->hasFile('poster')) {
-            // Delete old poster if exists
-            if ($event->poster_path && Storage::disk('public')->exists($event->poster_path)) {
+            // Hapus gambar lama jika sebelumnya sudah memiliki poster
+            if ($event->poster_path) {
                 Storage::disk('public')->delete($event->poster_path);
             }
-
-            $path = $request->file('poster')->store('posters', 'public');
-            $data['poster_path'] = $path;
+            // Upload gambar baru
+            $data['poster_path'] = $request->file('poster')->store('posters', 'public');
         }
 
         $event->update($data);
