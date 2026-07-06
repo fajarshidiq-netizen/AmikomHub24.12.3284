@@ -10,11 +10,13 @@ use App\Http\Controllers\Admin\TransactionController as AdminTransactionControll
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
+use App\Http\Controllers\CheckoutController;
 
 // User Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/events/{id}', [EventController::class, 'show'])->name('events.show');
-Route::get('/events/{id}/checkout', [EventController::class, 'checkout'])->name('events.checkout');
+Route::get('/events/{event}', [EventController::class, 'show'])->name('events.show');
+Route::get('/checkout/{event}', [CheckoutController::class, 'create'])->name('checkout.create');
+Route::post('/checkout/{event}', [CheckoutController::class, 'store'])->name('checkout.store');
 Route::get('/tickets/{id}', [TicketController::class, 'show'])->name('tickets.show');
 
 // Admin Guest Routes

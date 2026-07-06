@@ -13,9 +13,4 @@ class EventController extends Controller
         $categories = Category::all();
         return view('event-detail', compact('event', 'categories'));
     }
-
-    public function checkout($id)
-    {
-        return view('checkout');
-    }
 }

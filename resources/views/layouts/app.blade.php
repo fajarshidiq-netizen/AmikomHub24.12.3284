@@ -62,6 +62,22 @@
         </div> -->
     </nav>
 
+    @if(session('success'))
+        <div class="max-w-7xl mx-auto px-6 mt-6">
+            <div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-2xl font-medium shadow-sm">
+                {{ session('success') }}
+            </div>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="max-w-7xl mx-auto px-6 mt-6">
+            <div class="p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl font-medium shadow-sm">
+                {{ session('error') }}
+            </div>
+        </div>
+    @endif
+
     @yield('content')
 
     <footer class="bg-indigo-900 text-indigo-100 py-20 px-6 mt-20">
