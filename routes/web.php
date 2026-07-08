@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\MidtransWebhookController;
 
 // User Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -20,6 +21,7 @@ Route::post('/checkout/{event}', [CheckoutController::class, 'store'])->name('ch
 Route::get('/payment/{order_id}', [CheckoutController::class, 'payment'])->name('checkout.payment');
 Route::get('/success/{order_id}', [CheckoutController::class, 'success'])->name('checkout.success');
 Route::get('/tickets/{id}', [TicketController::class, 'show'])->name('tickets.show');
+Route::post('/midtrans/callback', [MidtransWebhookController::class, 'handle']);
 
 // Admin Guest Routes
 Route::middleware('guest')->group(function () {
